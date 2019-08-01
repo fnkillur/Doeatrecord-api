@@ -1,20 +1,9 @@
 import express from 'express';
-import {ApolloServer, gql} from 'apollo-server-express';
+import {ApolloServer} from 'apollo-server-express';
+import typeDefs from './schema';
+import resolvers from './resolvers';
 
 const app = express();
-
-const typeDefs = gql`
-  type Query {
-    hello: String
-  }
-`;
-
-const resolvers = {
-	Query: {
-		hello: () => 'Do Eat, Record Api!',
-	},
-};
-
 const server = new ApolloServer({typeDefs, resolvers});
 
 server.applyMiddleware({app, path: '/graphql'});
