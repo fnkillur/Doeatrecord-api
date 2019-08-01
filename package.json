@@ -1,0 +1,32 @@
+{
+  "name": "Doeatrecord-api",
+  "version": "1.0.0",
+  "description": "DoEatRecord App Api Server by GraphQL, Apollo",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon --exec babel-node src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/guinness1024/Doeatrecord-api.git"
+  },
+  "author": "teo.dor",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/guinness1024/Doeatrecord-api/issues"
+  },
+  "homepage": "https://github.com/guinness1024/Doeatrecord-api#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/node": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "nodemon": "^1.19.1"
+  },
+  "dependencies": {
+    "apollo-server": "^2.8.1",
+    "apollo-server-express": "^2.8.1",
+    "express": "^4.17.1",
+    "graphql": "^14.4.2"
+  }
+}
