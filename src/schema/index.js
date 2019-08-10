@@ -7,8 +7,21 @@ export default gql`
 	
 	type User {
 		id: String
-		key: String
-		email: String
-		phone: String
+		places: [Place]
+		SpendList: [Spend]
+	}
+	
+	type Place {
+		id: String
+		x: String
+		y: String
+		category: String
+	}
+	
+	type Spend {
+		id: ID
+		userId: String
+		palceId: String
+		money: Int
 	}
 `;
