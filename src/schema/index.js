@@ -8,7 +8,7 @@ export default gql`
 	type User {
 		id: String
 		places: [Place]
-		SpendList: [Spend]
+		spends: [Spend]
 	}
 	
 	type Place {
