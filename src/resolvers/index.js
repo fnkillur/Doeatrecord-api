@@ -1,8 +1,14 @@
-import User from "../models/User";
+import Record from "../models/Record";
 
 export default {
-	Query: {
-		hello: () => 'Do Eat, Record Api!',
-		getUser: async id => await User.findById(id).exec()
-	},
+  Query: {
+    async getMyRecords(_, {userId}) {
+      return await Record.find({userId}).sort('created');
+    }
+  },
+  Mutation: {
+    async createRecord(_, {input}) {
+      return await Record.create(input);
+    }
+  }
 };

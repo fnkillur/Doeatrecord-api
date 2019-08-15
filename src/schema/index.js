@@ -1,27 +1,36 @@
-import {gql} from 'apollo-server-express';
+import {gql} from "apollo-server-express";
 
 export default gql`
-	type Query {
-		hello: String
-	}
-	
-	type User {
-		id: String
-		places: [Place]
-		spends: [Spend]
-	}
-	
-	type Place {
-		id: String
-		x: String
-		y: String
-		category: String
-	}
-	
-	type Spend {
-		id: ID
-		userId: String
-		palceId: String
-		money: Int
-	}
+  scalar Date
+  
+  type Query {
+    getMyRecords(userId: String!) : [Record]
+  }
+
+  type Mutation {
+    createRecord(input: NewRecord!) : Record
+  }
+  
+  type Record {
+    userId: String!
+    placeId: String!
+    category: String
+    x: String
+    y: String
+    money: Int
+    menus: [String]
+    created: Date
+    updated: Date
+    isDelete: Boolean
+  }
+
+  input NewRecord {
+    userId: String!
+    placeId: String!
+    category: String
+    x: String
+    y: String
+    money: Int
+    menus: [String]
+  }
 `;
