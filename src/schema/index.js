@@ -4,7 +4,7 @@ export default gql`
   scalar Date
   
   type Query {
-    getMyRecords(userId: String!) : [Record]
+    records(userId: String!) : [Record]
   }
 
   type Mutation {
@@ -12,13 +12,16 @@ export default gql`
   }
   
   type Record {
+	  _id: ID
     userId: String!
     placeId: String!
+	  placeName: String
     category: String
     x: String
     y: String
-    money: Int
+	  visitedDate: String
     menus: [String]
+    money: Int
     created: Date
     updated: Date
     isDelete: Boolean
@@ -27,10 +30,12 @@ export default gql`
   input NewRecord {
     userId: String!
     placeId: String!
+	  placeName: String
     category: String
     x: String
     y: String
-    money: Int
+    visitedDate: String
     menus: [String]
+    money: Int
   }
 `;
