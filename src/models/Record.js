@@ -6,6 +6,7 @@ const RecordSchema = new Schema({
   placeId: {type: String, required: true},
   placeName: String,
   category: String,
+  address: String,
   x: String,
   y: String,
   visitedDate: String,

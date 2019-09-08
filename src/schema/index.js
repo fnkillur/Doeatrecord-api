@@ -17,6 +17,7 @@ export default gql`
     placeId: String!
 	  placeName: String
     category: String
+    address: String
     x: String
     y: String
 	  visitedDate: String
@@ -32,6 +33,7 @@ export default gql`
     placeId: String!
 	  placeName: String
     category: String
+    address: String
     x: String
     y: String
     visitedDate: String
