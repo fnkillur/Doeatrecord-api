@@ -4,7 +4,7 @@ export default gql`
   scalar Date
   
   type Query {
-    records(userId: String!) : [Record]
+    records(userId: String!, pageNo: Int! = 1) : [Record]
   }
 
   type Mutation {
@@ -20,7 +20,7 @@ export default gql`
     address: String
     x: String
     y: String
-	  visitedDate: String
+	  visitedDate: Date
     menus: [String]
     money: Int
     created: Date
@@ -36,7 +36,7 @@ export default gql`
     address: String
     x: String
     y: String
-    visitedDate: String
+    visitedDate: Date
     menus: [String]
     money: Int
   }

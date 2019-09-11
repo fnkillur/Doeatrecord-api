@@ -9,7 +9,7 @@ const RecordSchema = new Schema({
   address: String,
   x: String,
   y: String,
-  visitedDate: String,
+  visitedDate: Date,
   menus: [String],
   money: Number,
   created: {type: Date, default: Date.now},
