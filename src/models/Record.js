@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+
 const {Schema, model} = mongoose;
 
 const RecordSchema = new Schema({
@@ -7,6 +8,7 @@ const RecordSchema = new Schema({
   placeName: String,
   category: String,
   address: String,
+  url: String,
   x: String,
   y: String,
   visitedDate: Date,
