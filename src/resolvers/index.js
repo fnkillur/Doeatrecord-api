@@ -17,9 +17,25 @@ export default {
       
       const allRecords = await Record.find(where).sort({visitedDate: -1});
       const nextSize = pageSize * cursor;
-      const records = allRecords.slice(0, nextSize);
+      const pagedRecords = allRecords.slice(0, nextSize);
+      const records = [];
       
-      console.log(`${userId}: No - ${cursor} / Keyword - ${keyword}`);
+      pagedRecords.length && pagedRecords
+        .map(({_doc}) => ({..._doc}))
+        .reduce((prev, curr) => {
+          records.push({
+            ...curr,
+            changedYear: prev.visitedYear !== curr.visitedYear ? curr.visitedYear : 0,
+            changedMonth: prev.visitedMonth !== curr.visitedMonth ? curr.visitedMonth : 0
+          });
+          
+          return curr;
+        }, {
+          visitedYear: pagedRecords[0]._doc.visitedYear,
+          visitedMonth: 0
+        });
+      
+      console.log(`${userId}: No - ${cursor} / Keyword - ${keyword || '없음'}`);
       
       return {
         cursor: cursor + 1,

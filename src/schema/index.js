@@ -29,6 +29,10 @@ export default gql`
     x: String
     y: String
     visitedDate: Date
+    visitedYear: Int
+    visitedMonth: Int
+    changedYear: Int
+    changedMonth: Int
     menus: [String]
     money: Int
     created: Date
@@ -46,6 +50,8 @@ export default gql`
     x: String
     y: String
     visitedDate: Date
+    visitedYear: Int
+    visitedMonth: Int
     menus: [String]
     money: Int
   }

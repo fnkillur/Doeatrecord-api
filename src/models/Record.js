@@ -12,6 +12,8 @@ const RecordSchema = new Schema({
   x: String,
   y: String,
   visitedDate: Date,
+  visitedYear: Number,
+  visitedMonth: Number,
   menus: [String],
   money: Number,
   created: {type: Date, default: Date.now},
