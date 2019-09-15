@@ -1,5 +1,6 @@
-import Record from "../models/Record";
 import moment from "moment";
+import Record from "../models/Record";
+import User from "../models/User";
 
 export default {
   Query: {
@@ -66,7 +67,28 @@ export default {
   Mutation: {
     async createRecord(_, {input}) {
       console.log(input);
-      return await Record.create(input);
+      
+      try {
+        return await Record.create(input);
+      } catch (error) {
+        console.error(error);
+        return null;
+      }
+    },
+    async createUser(_, {userId}) {
+      console.log(userId);
+      
+      const findUser = await User.findOne({userId});
+      if (!findUser) {
+        try {
+          return await User.create({userId});
+        } catch(error) {
+          console.error(error);
+          return null;
+        }
+      }
+      
+      return findUser;
     }
   }
 };

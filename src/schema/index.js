@@ -10,6 +10,7 @@ export default gql`
 
   type Mutation {
     createRecord(input: NewRecord!): Record
+    createUser(userId: String!): User
   }
 
   type Records {
@@ -59,5 +60,12 @@ export default gql`
   type Spending {
     total: Int!
     dutch: Int!
+  }
+  
+  type User {
+    userId: String!
+    coupleId: String
+    created: Date
+    updated: Date
   }
 `;

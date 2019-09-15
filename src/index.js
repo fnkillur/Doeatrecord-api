@@ -10,5 +10,5 @@ const server = new ApolloServer({typeDefs, resolvers});
 server.applyMiddleware({app, path: '/graphql'});
 
 app.listen({port: 4000}, () => {
-	console.log('Apollo Server on http://localhost:4000/graphql')
+	console.log('Apollo Server on http://api.doeatrecord.com:4000/graphql')
 });
