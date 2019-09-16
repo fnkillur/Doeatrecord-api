@@ -10,7 +10,7 @@ export default gql`
 
   type Mutation {
     createRecord(input: NewRecord!): Record
-    createUser(userId: String!): User
+    createUser(userId: String!, nickname: String!, thumbnail: String!): User
   }
 
   type Records {
@@ -65,6 +65,8 @@ export default gql`
   type User {
     userId: String!
     coupleId: String
+    nickname: String
+    thumbnail: String
     created: Date
     updated: Date
   }

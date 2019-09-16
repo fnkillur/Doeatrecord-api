@@ -5,6 +5,8 @@ const {Schema, model} = mongoose;
 const UserSchema = new Schema({
   userId: {type: String, required: true, index: true},
   coupleId: String,
+  nickname: String,
+  thumbnail: String,
   created: {type: Date, default: Date.now},
   updated: {type: Date, default: Date.now}
 });

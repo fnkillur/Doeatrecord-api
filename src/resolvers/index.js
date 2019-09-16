@@ -75,20 +75,16 @@ export default {
         return null;
       }
     },
-    async createUser(_, {userId}) {
+    async createUser(_, {userId, nickname, thumbnail}) {
       console.log(userId);
       
-      const findUser = await User.findOne({userId});
-      if (!findUser) {
-        try {
-          return await User.create({userId});
-        } catch(error) {
-          console.error(error);
-          return null;
-        }
+      try {
+        const updated = await User.findOneAndUpdate({userId}, {$set: {nickname, thumbnail}}, {returnNewDocument: true});
+        return updated || await User.create({userId, coupleId: null, nickname, thumbnail});
+      } catch (error) {
+        console.error(error);
+        return null;
       }
-      
-      return findUser;
     }
   }
 };
