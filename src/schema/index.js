@@ -6,6 +6,7 @@ export default gql`
   type Query {
     records(userId: String!, keyword: String, cursor: Int, pageSize: Int): Records!
     spending(userId: String!, now: Date): Spending!
+	  users(keyword: String): [User]
   }
 
   type Mutation {
