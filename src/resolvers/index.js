@@ -64,7 +64,7 @@ export default {
 			}
 		},
 		async users(_, {keyword = ''}) {
-			return await User.find(keyword ? {nickname: new RegExp(keyword)} : {}).sort({nickname: 1});
+			return keyword ? await User.find({nickname: new RegExp(keyword)}).sort({nickname: 1}) : null;
 		}
 	},
 	Mutation: {
@@ -79,7 +79,7 @@ export default {
 			}
 		},
 		async createUser(_, {userId, nickname, thumbnail}) {
-			console.log(userId);
+			console.log(`${userId} (${nickname}): ${thumbnail}`);
 			
 			try {
 				const updated = await User.findOneAndUpdate({userId}, {$set: {nickname, thumbnail}}, {returnNewDocument: true});
