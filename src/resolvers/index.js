@@ -82,11 +82,12 @@ export default {
 			console.log(`${userId} (${nickname}): ${thumbnail}`);
 			
 			try {
-				const updated = await User.findOneAndUpdate({userId}, {$set: {nickname, thumbnail}}, {returnNewDocument: true});
-				return updated || await User.create({userId, coupleId: null, nickname, thumbnail});
+				const found = await User.find({userId});
+				found.length ? await User.update({userId}, {$set: {nickname, thumbnail}}) : await User.create({userId, nickname, thumbnail});
+				return true;
 			} catch (error) {
 				console.error(error);
-				return null;
+				return false;
 			}
 		}
 	}
