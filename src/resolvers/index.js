@@ -64,7 +64,7 @@ export default {
 			}
 		},
 		async users(_, {keyword = ''}) {
-			return keyword ? await User.find({nickname: new RegExp(keyword)}).sort({nickname: 1}) : null;
+			return keyword ? await User.find({nickname: new RegExp(keyword)}).sort({nickname: 1}) : [];
 		}
 	},
 	Mutation: {
