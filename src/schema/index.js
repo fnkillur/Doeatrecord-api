@@ -12,6 +12,7 @@ export default gql`
   type Mutation {
     createRecord(input: NewRecord!): Record
     createUser(userId: String!, nickname: String!, thumbnail: String): Boolean
+	  requestCouple(me: String!, you: String!): Boolean
   }
 
   type Records {

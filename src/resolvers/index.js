@@ -83,9 +83,20 @@ export default {
 			
 			try {
 				const found = await User.find({userId});
-				found.length ? await User.update({userId}, {$set: {nickname, thumbnail}}) : await User.create({userId, nickname, thumbnail});
+				found.length ? await User.updateOne({userId}, {$set: {nickname, thumbnail}}) : await User.create({userId, nickname, thumbnail});
 				return true;
 			} catch (error) {
+				console.error(error);
+				return false;
+			}
+		},
+		async requestCouple(_, {me, you}) {
+			console.log(`${me}가 ${you}에게 요청`);
+			
+			try {
+				await User.updateOne({userId: you}, {$set: {coupleId: me, isCoupled: false}});
+				return true;
+			} catch(error){
 				console.error(error);
 				return false;
 			}
