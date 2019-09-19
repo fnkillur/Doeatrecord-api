@@ -1,6 +1,7 @@
 import moment from "moment";
 import Record from "../models/Record";
 import User from "../models/User";
+import Matching from "../models/Matching";
 
 export default {
 	Query: {
@@ -94,7 +95,6 @@ export default {
 			console.log(`${me}가 ${you}에게 요청`);
 			
 			try {
-				await User.updateOne({userId: you}, {$set: {coupleId: me, isCoupled: false}});
 				return true;
 			} catch(error){
 				console.error(error);
