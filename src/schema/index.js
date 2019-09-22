@@ -7,14 +7,14 @@ export default gql`
     records(userId: String!, keyword: String, cursor: Int, pageSize: Int): Records!
     spending(userId: String!, now: Date): Spending!
 	  users(keyword: String): [User]
-    receivedAlarms(target: String!): [Matching]
-    requestedAlarms(applicant: String!): [Matching]
+    receivedAlarms(targetId: String!): [Matching]
+    requestedAlarms(applicantId: String!): [Matching]
   }
 
   type Mutation {
     createRecord(input: NewRecord!): Record
     createUser(userId: String!, nickname: String!, thumbnail: String): Boolean
-	  requestCouple(me: String!, you: String!, type: String!): Boolean
+	  requestMatching(applicantId: String!, applicantName: String!, targetId: String!, targetName: String! type: String!): Boolean
   }
 
   type Records {
@@ -77,8 +77,12 @@ export default gql`
   }
   
   type Matching {
-    applicant: String
-    target: String
+    _id: ID
+    applicantId: String
+    applicantName: String
+    targetId: String
+    targetName: String
+    type: String
     completed: Boolean
     result: String
     alarm: Boolean

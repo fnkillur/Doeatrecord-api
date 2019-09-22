@@ -67,11 +67,11 @@ export default {
     async users(_, {keyword = ''}) {
       return keyword ? await User.find({nickname: new RegExp(keyword)}).sort({nickname: 1}) : [];
     },
-    async receivedAlarms(_, {target}) {
-      return await Matching.find({alarm: true, target}).sort({created: -1});
+    async receivedAlarms(_, {targetId}) {
+      return await Matching.find({alarm: true, targetId}).sort({created: -1});
     },
-    async requestedAlarms(_, {applicant}) {
-      return await Matching.find({alarm: true, applicant}).sort({created: -1});
+    async requestedAlarms(_, {applicantId}) {
+      return await Matching.find({alarm: true, applicantId}).sort({created: -1});
     }
   },
   Mutation: {
@@ -101,11 +101,11 @@ export default {
         return false;
       }
     },
-    async requestCouple(_, {me, you, type}) {
-      console.log(`${me}가 ${you}에게 요청`);
+    async requestMatching(_, {applicantId, applicantName, targetId, targetName, type}) {
+      console.log(`${applicantId}가 ${targetId}에게 요청`);
       
       try {
-        await Matching.create({applicant: me, target: you, type});
+        await Matching.create({applicantId, applicantName, targetId, targetName, type});
         return true;
       } catch (error) {
         console.error(error);

@@ -3,8 +3,10 @@ import mongoose from "mongoose";
 const {Schema, model} = mongoose;
 
 const MatchingSchema = new Schema({
-	applicant: String,
-	target: String,
+	applicantId: String,
+	applicantName: String,
+	targetId: String,
+	targetName: String,
 	type: String,
 	completed: {type: Boolean, default: false},
 	result: {type: String, default: 'wait'},
