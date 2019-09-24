@@ -6,7 +6,7 @@ import Matching from "../models/Matching";
 export default {
   Query: {
     async records(_, {userId, keyword, cursor = 1, pageSize = 10}) {
-      const where = {userId};
+      let where = {userId};
       if (keyword) {
         const likeQuery = new RegExp(keyword);
         where.$or = [
@@ -46,7 +46,7 @@ export default {
       };
     },
     async spending(_, {userId, now}) {
-      const where = {userId};
+      let where = {userId};
       if (now) {
         where.visitedDate = {
           $gte: moment(now).startOf('month'),
@@ -68,7 +68,7 @@ export default {
       return keyword ? await User.find({nickname: new RegExp(keyword)}).sort({nickname: 1}) : [];
     },
     async receivedAlarms(_, {targetId}) {
-      return await Matching.find({alarm: true, targetId}).sort({created: -1});
+      return await Matching.find({completed: false, targetId}).sort({created: -1});
     },
     async requestedAlarms(_, {applicantId}) {
       return await Matching.find({alarm: true, applicantId}).sort({created: -1});
@@ -90,11 +90,12 @@ export default {
       
       try {
         const found = await User.find({userId});
-        found.length ? await User.updateOne({userId}, {$set: {nickname, thumbnail}}) : await User.create({
-          userId,
-          nickname,
-          thumbnail
-        });
+        found.length
+          ?
+          await User.updateOne({userId}, {$set: {nickname, thumbnail}})
+          :
+          await User.create({userId, nickname, thumbnail});
+        
         return true;
       } catch (error) {
         console.error(error);
@@ -109,6 +110,46 @@ export default {
         return true;
       } catch (error) {
         console.error(error);
+        return false;
+      }
+    },
+    async decideAlarm(_, {_id, result, type, myId, applicantId}) {
+      console.log(`${_id} 알림 ${result} 처리`);
+      
+      try {
+        await Matching.findOneAndUpdate({_id}, {$set: {result, completed: true, alarm: true}});
+        if (result === 'rejected') {
+          return true;
+        }
+        
+        await User.findOneAndUpdate({userId: myId},
+          type === 'couple'
+            ?
+            {$set: {coupleId: applicantId}}
+            :
+            {$addToSet: {friends: applicantId}}
+        );
+        await User.findOneAndUpdate({userId: applicantId},
+          type === 'couple'
+            ?
+            {$set: {coupleId: myId}}
+            :
+            {$addToSet: {friends: myId}});
+        
+        return true;
+      } catch (error) {
+        console.error(error);
+        return false;
+      }
+    },
+    async offAlarm(_, {_id}) {
+      console.log(`${_id} 알림 끄기`);
+      
+      try {
+        await Matching.findOneAndUpdate({_id}, {$set: {alarm: false}});
+        return true;
+      } catch (error) {
+        console.log(error);
         return false;
       }
     }

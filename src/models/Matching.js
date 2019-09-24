@@ -10,7 +10,7 @@ const MatchingSchema = new Schema({
 	type: String,
 	completed: {type: Boolean, default: false},
 	result: {type: String, default: 'wait'},
-	alarm: {type: Boolean, default: true},
+	alarm: {type: Boolean, default: false},
 	created: {type: Date, default: Date.now},
 	updated: {type: Date, default: Date.now}
 });
