@@ -52,7 +52,9 @@ export default {
       };
     },
     async spending(_, {userId, now}) {
-      let where = {userId};
+      const {coupleId} = await User.findOne({userId});
+      
+      let where = {$or: coupleId ? [{userId}, {userId: coupleId}] : [{userId}]};
       if (now) {
         where.visitedDate = {
           $gte: moment(now).startOf('month'),
