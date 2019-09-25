@@ -72,7 +72,19 @@ export default {
     },
     async requestedAlarms(_, {applicantId}) {
       return await Matching.find({alarm: true, applicantId}).sort({created: -1});
-    }
+    },
+	  async myLover(_ , {myId: userId}) {
+    	const {coupleId} = await User.findOne({userId});
+		  if (!coupleId) {
+		  	return null;
+		  }
+		  
+    	const {nickname, thumbnail} = await User.findOne({userId: coupleId});
+		  return {
+    		nickname: nickname,
+			  thumbnail: thumbnail
+		  };
+	  }
   },
   Mutation: {
     async createRecord(_, {input}) {

@@ -9,6 +9,7 @@ export default gql`
 	  users(keyword: String): [User]
     receivedAlarms(targetId: String!): [Matching]
     requestedAlarms(applicantId: String!): [Matching]
+	  myLover(myId: String!): User
   }
 
   type Mutation {
