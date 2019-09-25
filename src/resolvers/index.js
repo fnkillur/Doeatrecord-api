@@ -6,18 +6,24 @@ import Matching from "../models/Matching";
 export default {
   Query: {
     async records(_, {userId, keyword, cursor = 1, pageSize = 10}) {
-      let where = {userId};
+      const {coupleId} = await User.findOne({userId});
+      
+      let orList = [{userId}];
+      coupleId && orList.push({userId: coupleId});
       if (keyword) {
         const likeQuery = new RegExp(keyword);
-        where.$or = [
+        orList.push(
           {placeName: likeQuery},
           {menus: likeQuery},
           {category: likeQuery},
           {address: likeQuery}
-        ];
+        );
       }
       
-      const allRecords = await Record.find(where).sort({visitedDate: -1});
+      const allRecords = await Record
+        .find({$or: orList})
+        .sort({visitedDate: -1});
+      
       const nextSize = pageSize * cursor;
       const pagedRecords = allRecords.slice(0, nextSize);
       const records = [];
@@ -73,18 +79,18 @@ export default {
     async requestedAlarms(_, {applicantId}) {
       return await Matching.find({alarm: true, applicantId}).sort({created: -1});
     },
-	  async myLover(_ , {myId: userId}) {
-    	const {coupleId} = await User.findOne({userId});
-		  if (!coupleId) {
-		  	return null;
-		  }
-		  
-    	const {nickname, thumbnail} = await User.findOne({userId: coupleId});
-		  return {
-    		nickname: nickname,
-			  thumbnail: thumbnail
-		  };
-	  }
+    async myLover(_, {myId: userId}) {
+      const {coupleId} = await User.findOne({userId});
+      if (!coupleId) {
+        return null;
+      }
+      
+      const {nickname, thumbnail} = await User.findOne({userId: coupleId});
+      return {
+        nickname: nickname,
+        thumbnail: thumbnail
+      };
+    }
   },
   Mutation: {
     async createRecord(_, {input}) {
