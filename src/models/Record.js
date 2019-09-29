@@ -16,6 +16,7 @@ const RecordSchema = new Schema({
   visitedMonth: Number,
   menus: [String],
   money: Number,
+  isDutch: {type: Boolean, default: true},
   created: {type: Date, default: Date.now},
   updated: {type: Date, default: Date.now},
   isDeleted: {type: Boolean, default: false}

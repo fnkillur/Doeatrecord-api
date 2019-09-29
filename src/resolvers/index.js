@@ -65,11 +65,15 @@ export default {
       const records = await Record.find(where);
       const total = records.reduce((sum, {money}) => sum + money, 0);
       
+      where.isDutch = true;
+      const dutchRecords = await Record.find(where);
+      const dutch = dutchRecords.reduce((sum, {money}) => sum + money, 0) / 2;
+      
       console.log(`${userId}: ${total}`);
       
       return {
         total,
-        dutch: total / 2
+        dutch
       }
     },
     async users(_, {keyword = ''}) {

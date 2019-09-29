@@ -43,6 +43,7 @@ export default gql`
     changedMonth: Int
     menus: [String]
     money: Int
+    isDutch: Boolean
     created: Date
     updated: Date
     isDelete: Boolean
@@ -62,6 +63,7 @@ export default gql`
     visitedMonth: Int
     menus: [String]
     money: Int
+    isDutch: Boolean
   }
 
   type Spending {
