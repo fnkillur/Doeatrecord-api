@@ -10,6 +10,7 @@ export default gql`
     receivedAlarms(targetId: String!): [Matching]
     requestedAlarms(applicantId: String!): [Matching]
 	  myLover(myId: String!): User
+    countedRecords(userId: String!): [Record]
   }
 
   type Mutation {
@@ -47,6 +48,7 @@ export default gql`
     created: Date
     updated: Date
     isDelete: Boolean
+    count: Int
   }
 
   input NewRecord {

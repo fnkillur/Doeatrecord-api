@@ -96,6 +96,28 @@ export default {
         nickname: nickname,
         thumbnail: thumbnail
       };
+    },
+    async countedRecords(_, {userId}) {
+      const {coupleId} = await User.findOne({userId});
+      
+      return await Record.aggregate([
+        {
+          $match: {
+            $or: coupleId ? [{userId}, {userId: coupleId}] : [{userId}]
+          }
+        }, {
+          $group: {
+            _id: '$placeId',
+            count: {$sum: 1},
+            placeName: {$first: '$placeName'},
+            url: {$first: '$url'},
+            x: {$first: '$x'},
+            y: {$first: '$y'}
+          }
+        }, {
+          $sort: {count: -1}
+        }
+      ]);
     }
   },
   Mutation: {
