@@ -27,7 +27,7 @@ export default {
       
       const allRecords = await Record
         .find({$and: andList})
-        .sort({visitedDate: -1});
+        .sort({visitedDate: -1, created: -1});
       
       const nextSize = pageSize * cursor;
       const pagedRecords = allRecords.slice(0, nextSize);
@@ -200,7 +200,18 @@ export default {
         await Matching.findOneAndUpdate({_id}, {$set: {alarm: false}});
         return true;
       } catch (error) {
-        console.log(error);
+        console.error(error);
+        return false;
+      }
+    },
+    async deleteRecord(_, {_id}) {
+      console.log(`${_id} 기록 삭제`);
+      
+      try {
+        await Record.remove({_id});
+        return true;
+      } catch (error) {
+        console.error(error);
         return false;
       }
     }

@@ -19,6 +19,7 @@ export default gql`
 	  requestMatching(applicantId: String!, applicantName: String!, targetId: String!, targetName: String! type: String!): Boolean
     decideAlarm(_id: ID!, result: String!, type: String!, myId: String!, applicantId: String!): Boolean
     offAlarm(_id: ID!): Boolean
+    deleteRecord(_id: ID!): Boolean
   }
 
   type Records {
