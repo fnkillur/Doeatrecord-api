@@ -14,7 +14,7 @@ export default gql`
   }
 
   type Mutation {
-    createRecord(input: NewRecord!): Record
+    createRecord(input: NewRecord!): Boolean
     createUser(userId: String!, nickname: String!, thumbnail: String): Boolean
 	  requestMatching(applicantId: String!, applicantName: String!, targetId: String!, targetName: String! type: String!): Boolean
     decideAlarm(_id: ID!, result: String!, type: String!, myId: String!, applicantId: String!): Boolean
@@ -53,6 +53,7 @@ export default gql`
   }
 
   input NewRecord {
+    _id: ID
     userId: String!
     placeId: String!
     placeName: String

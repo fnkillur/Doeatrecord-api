@@ -14,16 +14,21 @@ export default {
       andList.push({$or: userList});
       
       if (keyword) {
-        let keywordList = [];
         const likeQuery = new RegExp(keyword);
-        keywordList.push(
-          {placeName: likeQuery},
-          {menus: likeQuery},
-          {category: likeQuery},
-          {address: likeQuery}
-        );
-        andList.push({$or: keywordList});
+        
+        andList.push({
+          $or: [
+            {placeName: likeQuery},
+            {menus: likeQuery},
+            {category: likeQuery},
+            {address: likeQuery}
+          ]
+        });
       }
+  
+      console.log(`유저: ${userId}`);
+      console.log(`페이지: ${cursor}`);
+      console.log(`검색어: ${keyword || '없음'}`);
       
       const allRecords = await Record
         .find({$and: andList})
@@ -47,8 +52,6 @@ export default {
           visitedYear: pagedRecords[0]._doc.visitedYear,
           visitedMonth: 0
         });
-      
-      console.log(`${userId}: No - ${cursor} / Keyword - ${keyword || '없음'}`);
       
       return {
         cursor: cursor + 1,
@@ -127,13 +130,16 @@ export default {
   },
   Mutation: {
     async createRecord(_, {input}) {
-      console.log(input);
+      const {_id} = input;
+      
+      console.log(_id ? `${_id} 기록 수정 =>` : `새로운 기록 =>`, input);
       
       try {
-        return await Record.create(input);
+        _id ? await Record.updateOne({_id}, {$set: input}) : await Record.create(input);
+        return true;
       } catch (error) {
         console.error(error);
-        return null;
+        return false;
       }
     },
     async createUser(_, {userId, nickname, thumbnail}) {
