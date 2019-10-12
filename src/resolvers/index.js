@@ -8,20 +8,25 @@ export default {
     async records(_, {userId, keyword, cursor = 1, pageSize = 10}) {
       const {coupleId} = await User.findOne({userId});
       
-      let orList = [{userId}];
-      coupleId && orList.push({userId: coupleId});
+      let andList = [];
+      let userList = [{userId}];
+      coupleId && userList.push({userId: coupleId});
+      andList.push({$or: userList});
+      
       if (keyword) {
+        let keywordList = [];
         const likeQuery = new RegExp(keyword);
-        orList.push(
+        keywordList.push(
           {placeName: likeQuery},
           {menus: likeQuery},
           {category: likeQuery},
           {address: likeQuery}
         );
+        andList.push({$or: keywordList});
       }
       
       const allRecords = await Record
-        .find({$or: orList})
+        .find({$and: andList})
         .sort({visitedDate: -1});
       
       const nextSize = pageSize * cursor;
