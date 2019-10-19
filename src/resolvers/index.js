@@ -111,7 +111,7 @@ export default {
       return await Record.aggregate([
         {
           $match: {
-            $or: coupleId ? [{userId}, {userId: coupleId}] : [{userId}]
+            $and: [{category: /음식점/}, {$or: coupleId ? [{userId}, {userId: coupleId}] : [{userId}]}]
           }
         }, {
           $group: {
