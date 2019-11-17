@@ -5,7 +5,6 @@ const {Schema, model} = mongoose;
 const UserSchema = new Schema({
   userId: {type: String, required: true, index: true},
   nickname: String,
-  thumbnail: String,
   coupleId: {type: String, default: ''},
   friends: [String],
   created: {type: Date, default: Date.now},

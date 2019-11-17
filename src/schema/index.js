@@ -15,7 +15,7 @@ export default gql`
 
   type Mutation {
     createRecord(input: NewRecord!): Boolean
-    createUser(userId: String!, nickname: String!, thumbnail: String): Boolean
+    createUser(userId: String!, nickname: String): Boolean
 	  requestMatching(applicantId: String!, applicantName: String!, targetId: String!, targetName: String! type: String!): Boolean
     decideAlarm(_id: ID!, result: String!, type: String!, myId: String!, applicantId: String!): Boolean
     offAlarm(_id: ID!): Boolean
@@ -78,7 +78,6 @@ export default gql`
   type User {
     userId: String!
     nickname: String
-    thumbnail: String
     coupleId: String
     friends: [String]
     created: Date

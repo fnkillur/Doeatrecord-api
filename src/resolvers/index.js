@@ -25,7 +25,7 @@ export default {
           ]
         });
       }
-  
+      
       console.log(`유저: ${userId}`);
       console.log(`페이지: ${cursor}`);
       console.log(`검색어: ${keyword || '없음'}`);
@@ -99,11 +99,8 @@ export default {
         return null;
       }
       
-      const {nickname, thumbnail} = await User.findOne({userId: coupleId});
-      return {
-        nickname: nickname,
-        thumbnail: thumbnail
-      };
+      const {nickname} = await User.findOne({userId: coupleId});
+      return {nickname};
     },
     async countedRecords(_, {userId}) {
       const {coupleId} = await User.findOne({userId});
@@ -142,16 +139,12 @@ export default {
         return false;
       }
     },
-    async createUser(_, {userId, nickname, thumbnail}) {
-      console.log(`${userId} (${nickname}): ${thumbnail}`);
+    async createUser(_, {userId, nickname}) {
+      console.log(`${userId} (${nickname})`);
       
       try {
         const found = await User.find({userId});
-        found.length
-          ?
-          await User.updateOne({userId}, {$set: {nickname, thumbnail}})
-          :
-          await User.create({userId, nickname, thumbnail});
+        await !found.length && User.create({userId, nickname});
         
         return true;
       } catch (error) {
@@ -180,15 +173,13 @@ export default {
         }
         
         await User.findOneAndUpdate({userId: myId},
-          type === 'couple'
-            ?
+          type === 'couple' ?
             {$set: {coupleId: applicantId}}
             :
             {$addToSet: {friends: applicantId}}
         );
         await User.findOneAndUpdate({userId: applicantId},
-          type === 'couple'
-            ?
+          type === 'couple' ?
             {$set: {coupleId: myId}}
             :
             {$addToSet: {friends: myId}});
