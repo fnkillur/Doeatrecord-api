@@ -3,61 +3,118 @@ import Record from "../models/Record";
 import User from "../models/User";
 import Matching from "../models/Matching";
 
+const getRecords = async (userId, keyword, coordinate) => {
+  const {coupleId} = await User.findOne({userId});
+  
+  console.log(`유저: ${userId}, 커플: ${coupleId || '없음'}`);
+  
+  let andList = [];
+  let userList = [{userId}];
+  coupleId && userList.push({userId: coupleId});
+  andList.push({$or: [{userId}]});
+  
+  if (keyword) {
+    const likeQuery = new RegExp(keyword);
+    
+    andList.push({
+      $or: [
+        {placeName: likeQuery},
+        {menus: likeQuery},
+        {category: likeQuery},
+        {address: likeQuery}
+      ]
+    });
+    console.log(`검색어: ${keyword}`);
+  }
+  
+  if (coordinate) {
+    const {xMin, xMax, yMin, yMax} = coordinate;
+    andList.push({x: {$gte: xMin, $lte: xMax}});
+    andList.push({y: {$gte: yMin, $lte: yMax}});
+    console.log(`좌표: ${xMin}, ${xMax}, ${yMin}, ${yMax}`);
+  }
+  
+  // {
+  //   $and: [
+  //     {$or: [{userId: userId, userId: coupleId}]},
+  //     {$or: [{placeName: /keyword/}, {menus: /keyword/}, {category: /keyword/}, {address: /keyword/}]},
+  //     {x: {$gte: xMin, $lte: xMax}},
+  //     {y: {$gte: yMin, $lte: yMax}}
+  //   ]
+  // }
+  
+  const pipelineList = [{$match: {$and: andList}}];
+  pipelineList.push(coordinate ?
+    {
+      $group: {
+        _id: '$placeId',
+        count: {$sum: 1},
+        placeName: {$first: '$placeName'},
+        url: {$first: '$url'},
+        x: {$first: '$x'},
+        y: {$first: '$y'}
+      }
+    }
+    :
+    {$sort: {visitedDate: -1, created: -1}}
+  );
+  
+  return await Record.aggregate(pipelineList);
+};
+
 export default {
   Query: {
     async records(_, {userId, keyword, cursor = 1, pageSize = 10}) {
-      const {coupleId} = await User.findOne({userId});
+      const allRecords = await getRecords(userId, keyword);
       
-      let andList = [];
-      let userList = [{userId}];
-      coupleId && userList.push({userId: coupleId});
-      andList.push({$or: userList});
-      
-      if (keyword) {
-        const likeQuery = new RegExp(keyword);
-        
-        andList.push({
-          $or: [
-            {placeName: likeQuery},
-            {menus: likeQuery},
-            {category: likeQuery},
-            {address: likeQuery}
-          ]
-        });
-      }
-      
-      console.log(`유저: ${userId}`);
       console.log(`페이지: ${cursor}`);
-      console.log(`검색어: ${keyword || '없음'}`);
-      
-      const allRecords = await Record
-        .find({$and: andList})
-        .sort({visitedDate: -1, created: -1});
       
       const nextSize = pageSize * cursor;
       const pagedRecords = allRecords.slice(0, nextSize);
       const records = [];
-      
-      pagedRecords.length && pagedRecords
-        .map(({_doc}) => ({..._doc}))
-        .reduce((prev, curr) => {
-          records.push({
-            ...curr,
-            changedYear: prev.visitedYear !== curr.visitedYear ? curr.visitedYear : 0,
-            changedMonth: prev.visitedMonth !== curr.visitedMonth ? curr.visitedMonth : 0
-          });
-          
-          return curr;
-        }, {
-          visitedYear: pagedRecords[0]._doc.visitedYear,
-          visitedMonth: 0
+      pagedRecords.reduce((prev, curr) => {
+        records.push({
+          ...curr,
+          changedYear: prev.visitedYear !== curr.visitedYear ? curr.visitedYear : 0,
+          changedMonth: prev.visitedMonth !== curr.visitedMonth ? curr.visitedMonth : 0
         });
+        
+        return curr;
+      }, {
+        visitedYear: pagedRecords[0].visitedYear,
+        visitedMonth: 0
+      });
       
       return {
         cursor: cursor + 1,
         hasMore: allRecords.length > nextSize,
         records
       };
+    },
+    async mapRecords(_, {userId, xMin, xMax, yMin, yMax, keyword}) {
+      return await getRecords(userId, keyword, {xMin, xMax, yMin, yMax});
+    },
+    async countedRecords(_, {userId}) {
+      const {coupleId} = await User.findOne({userId});
+      
+      return await Record.aggregate([
+        {
+          $match: {
+            $and: [{category: /음식점/}, {$or: coupleId ? [{userId}, {userId: coupleId}] : [{userId}]}]
+          }
+        }, {
+          $group: {
+            _id: '$placeId',
+            count: {$sum: 1},
+            placeName: {$first: '$placeName'},
+            url: {$first: '$url'},
+            x: {$first: '$x'},
+            y: {$first: '$y'}
+          }
+        }, {
+          $sort: {count: -1}
+        }
+      ]);
     },
     async spending(_, {userId, now}) {
       const {coupleId} = await User.findOne({userId});
@@ -101,28 +158,6 @@ export default {
       
       const {nickname} = await User.findOne({userId: coupleId});
       return {nickname};
-    },
-    async countedRecords(_, {userId}) {
-      const {coupleId} = await User.findOne({userId});
-      
-      return await Record.aggregate([
-        {
-          $match: {
-            $and: [{category: /음식점/}, {$or: coupleId ? [{userId}, {userId: coupleId}] : [{userId}]}]
-          }
-        }, {
-          $group: {
-            _id: '$placeId',
-            count: {$sum: 1},
-            placeName: {$first: '$placeName'},
-            url: {$first: '$url'},
-            x: {$first: '$x'},
-            y: {$first: '$y'}
-          }
-        }, {
-          $sort: {count: -1}
-        }
-      ]);
     }
   },
   Mutation: {

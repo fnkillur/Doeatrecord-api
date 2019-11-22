@@ -5,12 +5,13 @@ export default gql`
 
   type Query {
     records(userId: String!, keyword: String, cursor: Int, pageSize: Int): Records!
+    mapRecords(userId: String!, xMin: String!, xMax: String!, yMin: String!, yMax: String!, keyword: String): [Record]
+    countedRecords(userId: String!): [Record]
     spending(userId: String!, now: Date): Spending!
-	  users(keyword: String): [User]
+    users(keyword: String): [User]
     receivedAlarms(targetId: String!): [Matching]
     requestedAlarms(applicantId: String!): [Matching]
-	  myLover(myId: String!): User
-    countedRecords(userId: String!): [Record]
+    myLover(myId: String!): User
   }
 
   type Mutation {
