@@ -11,7 +11,7 @@ const getRecords = async (userId, keyword, coordinate) => {
   let andList = [];
   let userList = [{userId}];
   coupleId && userList.push({userId: coupleId});
-  andList.push({$or: [{userId}]});
+  andList.push({$or: userList});
   
   if (keyword) {
     const likeQuery = new RegExp(keyword);
@@ -42,13 +42,13 @@ const getRecords = async (userId, keyword, coordinate) => {
   //     {y: {$gte: yMin, $lte: yMax}}
   //   ]
   // }
-  
   const pipelineList = [{$match: {$and: andList}}];
   pipelineList.push(coordinate ?
     {
       $group: {
         _id: '$placeId',
         count: {$sum: 1},
+        category: {$first: '$category'},
         placeName: {$first: '$placeName'},
         url: {$first: '$url'},
         x: {$first: '$x'},
