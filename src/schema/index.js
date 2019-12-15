@@ -10,10 +10,12 @@ export default gql`
     recordsByCount(userId: String!, now: Date): [Record]
     recordsByScore(userId: String!, now: Date): [Record]
     spending(userId: String!, now: Date): Spending!
+    user(userId: String!): User
     users(keyword: String): [User]
+    myLover(myId: String!): User
+    myFriends(userId: String!): [User]
     receivedAlarms(targetId: String!): [Matching]
     requestedAlarms(applicantId: String!, alarm: Boolean): [Matching]
-    myLover(myId: String!): User
   }
 
   type Mutation {

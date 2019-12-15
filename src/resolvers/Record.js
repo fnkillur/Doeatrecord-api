@@ -41,15 +41,6 @@ const getRecords = async ({userId, keyword, now, coordinate, moreInfo, sort}, us
     andList.push(moreInfo);
   }
   
-  // {
-  //   $and: [
-  //     {visitedDate: {$gte: 1일, $lte: 말일}},
-  //     {$or: [{userId: userId, userId: coupleId}]},
-  //     {$or: [{placeName: /keyword/}, {menus: /keyword/}, {category: /keyword/}, {address: /keyword/}]},
-  //     {x: {$gte: xMin, $lte: xMax}},
-  //     {y: {$gte: yMin, $lte: yMax}}
-  //   ]
-  // }
   const pipelineList = [{$match: {$and: andList}}];
   usePipeline && pipelineList.push({
     $group: {
