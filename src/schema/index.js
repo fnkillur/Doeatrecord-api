@@ -4,9 +4,11 @@ export default gql`
   scalar Date
 
   type Query {
+    record(userId: String!, placeId: String!): Record
     records(userId: String!, keyword: String, cursor: Int, pageSize: Int): Records!
     mapRecords(userId: String!, xMin: String!, xMax: String!, yMin: String!, yMax: String!, keyword: String): [Record]
-    countedRecords(userId: String!): [Record]
+    recordsByCount(userId: String!, now: Date): [Record]
+    recordsByScore(userId: String!, now: Date): [Record]
     spending(userId: String!, now: Date): Spending!
     users(keyword: String): [User]
     receivedAlarms(targetId: String!): [Matching]
@@ -46,6 +48,7 @@ export default gql`
     changedMonth: Int
     menus: [String]
     money: Int
+    score: Int
     isDutch: Boolean
     created: Date
     updated: Date
@@ -68,6 +71,7 @@ export default gql`
     visitedMonth: Int
     menus: [String]
     money: Int
+    score: Int
     isDutch: Boolean
   }
 
