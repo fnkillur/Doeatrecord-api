@@ -4,10 +4,10 @@ import User from "../models/User";
 export default {
   Query: {
     async receivedAlarms(_, {targetId}) {
-      return await Matching.find({completed: false, targetId}).sort({created: -1});
+      return Matching.find({completed: false, targetId}).sort({created: -1});
     },
     async requestedAlarms(_, {applicantId, alarm}) {
-      return await Matching.find({alarm, applicantId}).sort({created: -1});
+      return Matching.find({alarm, applicantId}).sort({created: -1});
     },
   },
   Mutation: {
