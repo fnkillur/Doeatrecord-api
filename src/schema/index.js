@@ -51,7 +51,7 @@ export default gql`
     changedMonth: Int
     menus: [String]
     money: Int
-    score: Int
+    score: Float
     isDutch: Boolean
     created: Date
     updated: Date
