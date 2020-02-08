@@ -21,8 +21,11 @@ const getRecords = async ({userIds = [], keyword, now, coordinate, moreInfo, sor
 	andList.push({$or: userList});
 	
 	if (now) {
-		andList.push({visitedMonth: moment(now).month() + 1});
-		console.log(`기준일: ${now}`);
+		andList.push({
+			visitedMonth: moment(now).month() + 1,
+			visitedYear: moment(now).year(),
+		});
+		console.log(`기준일: ${now}, ${moment(now).year()}:${moment(now).month() + 1}`);
 	}
 	
 	if (keyword) {
