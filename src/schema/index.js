@@ -52,6 +52,9 @@ export default gql`
     menus: [String]
     money: Int
     score: Float
+    tasty: Int
+    kind: Int
+    costEfficient: Int
     isDutch: Boolean
     created: Date
     updated: Date
@@ -75,6 +78,9 @@ export default gql`
     menus: [String]
     money: Int
     score: Int
+    tasty: Int
+    kind: Int
+    costEfficient: Int
     isDutch: Boolean
   }
 
