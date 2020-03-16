@@ -108,14 +108,9 @@ export default {
 				records
 			};
 		},
-		async mapRecords(_, {userId, friends = [], xMin, xMax, yMin, yMax, viewScore, keyword}) {
+		async mapRecords(_, {userId, xMin, xMax, yMin, yMax, viewScore, keyword}) {
 			const myRecords = await getRecords({userIds: [userId], keyword, coordinate: {xMin, xMax, yMin, yMax}});
-			const friendsRecords = await getRecords({userIds: friends, keyword, coordinate: {xMin, xMax, yMin, yMax}});
-			const distinctMyRecords = myRecords.filter(({_id}) => !friendsRecords.find(friendsRecord => friendsRecord._id === _id))
-				.map(record => ({...record, isMine: true}));
-			const allRecords = friendsRecords.map(record => ({...record, isMine: false}))
-				.concat(distinctMyRecords);
-			return viewScore ? allRecords.filter(({score}) => Math.floor(score) === viewScore) : allRecords;
+			return viewScore ? myRecords.filter(({score}) => Math.floor(score) === viewScore) : myRecords;
 		},
 		async recordsByCount(_, {userId, now}) {
 			return await getRecords({

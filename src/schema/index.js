@@ -6,7 +6,7 @@ export default gql`
   type Query {
     record(userId: String!, placeId: String!): Record
     records(userId: String!, keyword: String, cursor: Int, pageSize: Int): Records!
-    mapRecords(userId: String!, friends: [String], xMin: String!, xMax: String!, yMin: String!, yMax: String!, viewScore: Int!, keyword: String): [Record]
+    mapRecords(userId: String!, xMin: String!, xMax: String!, yMin: String!, yMax: String!, keyword: String): [Record]
     recordsByCount(userId: String!, now: Date): [Record]
     recordsByScore(userId: String!, now: Date): [Record]
     spending(userId: String!, now: Date): Spending!
