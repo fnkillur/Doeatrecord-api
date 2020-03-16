@@ -47,8 +47,6 @@ export default gql`
     visitedDate: Date
     visitedYear: Int
     visitedMonth: Int
-    changedYear: Int
-    changedMonth: Int
     menus: [String]
     money: Int
     score: Float

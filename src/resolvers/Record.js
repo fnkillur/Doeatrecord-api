@@ -87,20 +87,7 @@ export default {
 			console.log(`페이지: ${cursor}`);
 			
 			const nextSize = pageSize * cursor;
-			const pagedRecords = allRecords.slice(0, nextSize);
-			const records = [];
-			pagedRecords.reduce((prev, curr) => {
-				records.push({
-					...curr,
-					changedYear: prev.visitedYear !== curr.visitedYear ? curr.visitedYear : 0,
-					changedMonth: prev.visitedMonth !== curr.visitedMonth ? curr.visitedMonth : 0
-				});
-				
-				return curr;
-			}, {
-				visitedYear: pagedRecords[0].visitedYear,
-				visitedMonth: 0
-			});
+			const records = allRecords.slice(0, nextSize);
 			
 			return {
 				cursor: cursor + 1,
