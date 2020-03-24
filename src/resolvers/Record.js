@@ -108,7 +108,7 @@ export default {
 			});
 		},
 		async recordsByScore(_, {userId, now}) {
-			return await getRecords({userIds: [userId], now, moreInfo: {category: new RegExp('음식점')}, sort: {score: -1}});
+			return await getRecords({userIds: [userId], now, moreInfo: {category: new RegExp('음식점'), score: {$gt: 0}}, sort: {score: -1}});
 		},
 		async spending(_, {userId, now}) {
 			const {coupleId} = await User.findOne({userId});

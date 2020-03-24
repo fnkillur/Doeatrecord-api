@@ -12,8 +12,9 @@ export default gql`
     spending(userId: String!, now: Date): Spending!
     user(userId: String!): User
     users(keyword: String): [User]
-    myLover(myId: String!): User
+    myLover(userId: String!): User
     myFriends(userId: String!): [User]
+    unknownUsers(userId: String!, keyword: String, type: String!): [User]
     receivedAlarms(targetId: String!): [Matching]
     requestedAlarms(applicantId: String!, alarm: Boolean): [Matching]
   }
