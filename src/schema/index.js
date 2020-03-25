@@ -13,10 +13,10 @@ export default gql`
     user(userId: String!): User
     users(keyword: String): [User]
     myLover(userId: String!): User
-    myFriends(userId: String!): [User]
-    unknownUsers(userId: String!, keyword: String, type: String!): [User]
+    myFriends(userId: String!, keyword: String): [User]
+    unMatchedUsers(userId: String!, keyword: String, type: String!): [User]
     receivedAlarms(targetId: String!): [Matching]
-    requestedAlarms(applicantId: String!, alarm: Boolean): [Matching]
+    requestedAlarms(applicantId: String!, alarm: Boolean, completed: Boolean): [Matching]
   }
 
   type Mutation {
@@ -26,6 +26,8 @@ export default gql`
     decideAlarm(_id: ID!, result: String!, type: String!, myId: String!, applicantId: String!): Boolean
     offAlarm(_id: ID!): Boolean
     deleteRecord(_id: ID!): Boolean
+    unFollow(userId: String!, friendId: String!): Boolean
+    breakUp(userId: String!, coupleId: String!): Boolean
   }
 
   type Records {
