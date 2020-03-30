@@ -5,9 +5,9 @@ export default {
     async user(_, {userId}) {
       return User.findOne({userId});
     },
-    async users(_, {keyword = ''}) {
+    async users(_, {userId = '', keyword = ''}) {
       return User
-        .find({nickname: new RegExp(keyword)})
+        .find({nickname: new RegExp(keyword), userId})
         .sort({nickname: 1});
     },
     async myLover(_, {userId}) {
@@ -27,10 +27,15 @@ export default {
       const {coupleId, friends = []} = await User.findOne({userId});
       let excludeList = friends.concat(userId);
       coupleId && excludeList.push(coupleId);
-      
+      console.log(await User
+        .find({
+          $or: [{userId: new RegExp(keyword)}, {nickname: new RegExp(keyword)}],
+          userId: {$nin: excludeList},
+          ...(type === 'couple' ? {coupleId: ''} : {}),
+        }));
       return User
         .find({
-          nickname: new RegExp(keyword),
+          $or: [{userId: new RegExp(keyword)}, {nickname: new RegExp(keyword)}],
           userId: {$nin: excludeList},
           ...(type === 'couple' ? {coupleId: ''} : {}),
         })
@@ -42,8 +47,7 @@ export default {
       console.log(`${userId} (${nickname})`);
       
       try {
-        const found = await User.find({userId});
-        !found.length && await User.create({userId, nickname});
+        await User.findOneAndUpdate({userId}, {$set: {nickname}}, {upsert: true});
         
         return true;
       } catch (error) {

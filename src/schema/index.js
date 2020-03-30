@@ -6,12 +6,12 @@ export default gql`
   type Query {
     record(userId: String!, placeId: String!): Record
     records(userId: String!, keyword: String, cursor: Int, pageSize: Int): Records!
-    mapRecords(userId: String!, xMin: String!, xMax: String!, yMin: String!, yMax: String!, keyword: String): [Record]
+    mapRecords(userId: String!, xMin: String!, xMax: String!, yMin: String!, yMax: String!): [Record]
     recordsByCount(userId: String!, now: Date): [Record]
     recordsByScore(userId: String!, now: Date): [Record]
     spending(userId: String!, now: Date): Spending!
     user(userId: String!): User
-    users(keyword: String): [User]
+    users(userId: String, keyword: String): [User]
     myLover(userId: String!): User
     myFriends(userId: String!, keyword: String): [User]
     unMatchedUsers(userId: String!, keyword: String, type: String!): [User]

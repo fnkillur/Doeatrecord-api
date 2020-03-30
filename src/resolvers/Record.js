@@ -17,7 +17,6 @@ const getRecords = async ({userIds = [], keyword, now, coordinate, moreInfo, sor
 		})
 	});
 	users.map(({coupleId}) => coupleId && userList.push({userId: coupleId}));
-	
 	andList.push({$or: userList});
 	
 	if (now) {
@@ -95,9 +94,10 @@ export default {
 				records
 			};
 		},
-		async mapRecords(_, {userId, xMin, xMax, yMin, yMax, viewScore, keyword}) {
-			const myRecords = await getRecords({userIds: [userId], keyword, coordinate: {xMin, xMax, yMin, yMax}});
-			return viewScore ? myRecords.filter(({score}) => Math.floor(score) === viewScore) : myRecords;
+		async mapRecords(_, {userId, xMin, xMax, yMin, yMax}) {
+			const myRecords = await getRecords({userIds: [userId], coordinate: {xMin, xMax, yMin, yMax}});
+			
+			return myRecords;
 		},
 		async recordsByCount(_, {userId, now}) {
 			return await getRecords({
