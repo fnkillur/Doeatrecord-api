@@ -31,7 +31,7 @@ export default {
       console.log(`${_id} 알림 ${result} 처리`);
       
       try {
-        if (result !== 'rejected') {
+        if (result !== 'reject') {
           await User.findOneAndUpdate({userId: myId},
             type === 'couple' ?
               {$set: {coupleId: applicantId}}

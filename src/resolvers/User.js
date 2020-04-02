@@ -48,6 +48,7 @@ export default {
       
       try {
         const found = await User.find({userId});
+        console.log(found);
         !found.length && await User.create({userId, nickname});
         
         return true;
