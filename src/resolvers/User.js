@@ -47,7 +47,8 @@ export default {
       console.log(`${userId} (${nickname})`);
       
       try {
-        await User.findOneAndUpdate({userId}, {$set: {nickname}}, {upsert: true});
+        const found = await User.find({userId});
+        !found.length && await User.create({userId, nickname});
         
         return true;
       } catch (error) {
