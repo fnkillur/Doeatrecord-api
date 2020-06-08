@@ -10,6 +10,7 @@ export default gql`
     recordsByCount(userId: String!, now: Date): [Record]
     recordsByScore(userId: String!, now: Date): [Record]
     spending(userId: String!, now: Date): Spending!
+    monthlySpending(userId: String!, now: Date, count: Int): [MonthlySpending]
     user(userId: String!): User
     users(userId: String, keyword: String): [User]
     myLover(userId: String!): User
@@ -82,6 +83,11 @@ export default gql`
   type Spending {
     total: Int!
     dutch: Int!
+  }
+  
+  type MonthlySpending {
+    label: String!
+    spending: Int!
   }
   
   type User {

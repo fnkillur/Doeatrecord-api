@@ -14,7 +14,7 @@ const getRecords = async ({userIds = [], keyword, now, coordinate, moreInfo, sor
     $or: userIds.map(userId => {
       userList.push({userId});
       return {userId};
-    })
+    }),
   });
   users.map(({coupleId}) => coupleId && userList.push({userId: coupleId}));
   andList.push({$or: userList});
@@ -50,6 +50,8 @@ const getRecords = async ({userIds = [], keyword, now, coordinate, moreInfo, sor
   if (moreInfo) {
     andList.push(moreInfo);
   }
+  
+  console.log(JSON.stringify(andList));
   
   const pipelineList = [{
     $match: {
@@ -142,30 +144,78 @@ export default {
     },
     async spending(_, {userId, now}) {
       const {coupleId} = await User.findOne({userId});
-      let where = {$or: coupleId ? [{userId}, {userId: coupleId}] : [{userId}]};
-      if (now) {
-        where.visitedDate = {
-          $gte: moment(now).startOf('month'),
-          $lte: moment(now).endOf('month')
+      
+      const pipelineList = [{
+        $match: {
+          $or: coupleId ? [{userId}, {userId: coupleId}] : [{userId}],
+          ...(now ?
+            {
+              visitedDate: {
+                $gte: moment(now).startOf('month').toDate(),
+                $lte: moment(now).endOf('month').toDate(),
+              },
+            }
+            :
+            {}),
+        }
+      }, {
+        $group: {
+          _id: '$isDutch',
+          count: {$sum: 1},
+          spending: {$sum: '$money'},
+        },
+      }];
+      
+      const results = await Record.aggregate(pipelineList);
+      
+      if (!results.length) {
+        return {
+          total: 0,
+          dutch: 0,
         };
       }
       
-      const records = await Record.find(where);
-      const total = records.reduce((sum, {money}) => sum + money, 0);
+      const dutch = results.find(({_id}) => _id).spending / 2;
+      const total = results.reduce((sum, {spending}) => sum + spending, 0);
       
-      let dutch = 0;
-      if (now && coupleId) {
-        where.isDutch = true;
-        const dutchRecords = await Record.find(where);
-        dutch = dutchRecords.reduce((sum, {money}) => sum + money, 0) / 2;
-      }
-      
-      console.log(`${userId}: ${total}`);
+      console.log(`${userId}: ${total} / ${dutch}`);
       
       return {
         total,
-        dutch
-      }
+        dutch,
+      };
+    },
+    async monthlySpending(_, {userId, now, count = 12}) {
+      const startDate = moment(now).subtract(count - 1, 'months').startOf('month');
+      
+      console.log(userId, '의', startDate.format('YYYY-MM-DD'), '이후', count, '달 평균 소비');
+      
+      const {coupleId} = await User.findOne({userId});
+      
+      const pipelineList = [{
+        $match: {
+          visitedDate: {
+            $gte: startDate.toDate(),
+            $lte: moment(now).endOf('month').toDate(),
+          },
+          $or: coupleId ? [{userId}, {userId: coupleId}] : [{userId}],
+        },
+      }, {
+        $group: {
+          _id: {year: '$visitedYear', month: '$visitedMonth'},
+          year: {$first: '$visitedYear'},
+          label: {$first: '$visitedMonth'},
+          count: {$sum: 1},
+          spending: {$sum: '$money'},
+        },
+      }, {
+        $sort: {year: 1, label: 1},
+      }];
+      
+      const results = await Record.aggregate(pipelineList);
+      console.log(results);
+      
+      return results;
     },
   },
   Mutation: {
