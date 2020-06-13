@@ -27,12 +27,7 @@ export default {
       const {coupleId, friends = []} = await User.findOne({userId});
       let excludeList = friends.concat(userId);
       coupleId && excludeList.push(coupleId);
-      console.log(await User
-        .find({
-          $or: [{userId: new RegExp(keyword)}, {nickname: new RegExp(keyword)}],
-          userId: {$nin: excludeList},
-          ...(type === 'couple' ? {coupleId: ''} : {}),
-        }));
+      
       return User
         .find({
           $or: [{userId: new RegExp(keyword)}, {nickname: new RegExp(keyword)}],
