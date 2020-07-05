@@ -28,6 +28,10 @@ export default {
       let excludeList = friends.concat(userId);
       coupleId && excludeList.push(coupleId);
       
+      if (!keyword) {
+        return [];
+      }
+      
       return User
         .find({
           $or: [{userId: new RegExp(keyword)}, {nickname: new RegExp(keyword)}],
