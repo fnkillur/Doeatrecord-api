@@ -3,7 +3,7 @@ import User from "../models/User";
 import Record from "../models/Record";
 
 const getRecords = async ({userIds = [], keyword, now, coordinate, moreInfo, sort}, usePipeline = true) => {
-  if (!userIds.length) {
+  if (!userIds.filter(id => !!id).length) {
     return [];
   }
   
@@ -24,7 +24,6 @@ const getRecords = async ({userIds = [], keyword, now, coordinate, moreInfo, sor
       visitedMonth: moment(now).month() + 1,
       visitedYear: moment(now).year(),
     });
-    console.log(`기준일: ${now}, ${moment(now).year()}:${moment(now).month() + 1}`);
   }
   
   if (keyword) {
@@ -37,21 +36,17 @@ const getRecords = async ({userIds = [], keyword, now, coordinate, moreInfo, sor
         {address: likeQuery}
       ]
     });
-    console.log(`검색어: ${keyword}`);
   }
   
   if (coordinate) {
     const {xMin, xMax, yMin, yMax} = coordinate;
     andList.push({x: {$gte: xMin, $lte: xMax}});
     andList.push({y: {$gte: yMin, $lte: yMax}});
-    console.log(`좌표: ${xMin}, ${xMax}, ${yMin}, ${yMax}`);
   }
   
   if (moreInfo) {
     andList.push(moreInfo);
   }
-  
-  console.log(JSON.stringify(andList));
   
   const pipelineList = [{
     $match: {
@@ -112,8 +107,6 @@ export default {
     async records(_, {userId, keyword, cursor = 1, pageSize = 10}) {
       const allRecords = await getRecords({userIds: [userId], keyword}, false);
       
-      console.log(`페이지: ${cursor}`);
-      
       const nextSize = pageSize * cursor;
       const records = allRecords.slice(0, nextSize);
       
@@ -144,54 +137,30 @@ export default {
     },
     async spending(_, {userId, now}) {
       const {coupleId} = await User.findOne({userId});
-      
-      const pipelineList = [{
-        $match: {
-          $or: coupleId ? [{userId}, {userId: coupleId}] : [{userId}],
-          ...(now ?
-            {
-              visitedDate: {
-                $gte: moment(now).startOf('month').toDate(),
-                $lte: moment(now).endOf('month').toDate(),
-              },
-            }
-            :
-            {}),
-        }
-      }, {
-        $group: {
-          _id: '$isDutch',
-          count: {$sum: 1},
-          spending: {$sum: '$money'},
-        },
-      }];
-      
-      const results = await Record.aggregate(pipelineList);
-      
-      if (!results.length) {
-        return {
-          total: 0,
-          dutch: 0,
+      let where = {$or: coupleId ? [{userId}, {userId: coupleId}] : [{userId}]};
+      if (now) {
+        where.visitedDate = {
+          $gte: moment(now).startOf('month'),
+          $lte: moment(now).endOf('month')
         };
       }
       
-      const dutch = results.find(({_id}) => _id).spending / 2;
-      const total = results.reduce((sum, {spending}) => sum + spending, 0);
-      
-      console.log(`${userId}: ${total} / ${dutch}`);
+      const records = await Record.find(where);
+      const {total, dutch} = records.reduce(({total, dutch}, {money, isDutch}) => {
+        return {
+          total: total + money,
+          dutch: dutch + (isDutch ? money : 0),
+        };
+      }, {total: 0, dutch: 0});
       
       return {
         total,
-        dutch,
+        dutch: dutch / 2,
       };
     },
     async monthlySpending(_, {userId, now, count = 12}) {
       const startDate = moment(now).subtract(count - 1, 'months').startOf('month');
-      
-      console.log(userId, '의', startDate.format('YYYY-MM-DD'), '이후', count, '달 평균 소비');
-      
       const {coupleId} = await User.findOne({userId});
-      
       const pipelineList = [{
         $match: {
           visitedDate: {
@@ -212,34 +181,25 @@ export default {
         $sort: {year: 1, label: 1},
       }];
       
-      const results = await Record.aggregate(pipelineList);
-      console.log(results);
-      
-      return results;
+      return await Record.aggregate(pipelineList);
     },
   },
   Mutation: {
     async createRecord(_, {input}) {
-      const {_id} = input;
-      
-      console.log(_id ? `${_id} 기록 수정 =>` : `새로운 기록 =>`, input);
-      
       try {
+        const {_id} = input;
         _id ? await Record.updateOne({_id}, {$set: input}) : await Record.create(input);
+        
         return true;
       } catch (error) {
-        console.error(error);
         return false;
       }
     },
     async deleteRecord(_, {_id}) {
-      console.log(`${_id} 기록 삭제`);
-      
       try {
         await Record.remove({_id});
         return true;
       } catch (error) {
-        console.error(error);
         return false;
       }
     },

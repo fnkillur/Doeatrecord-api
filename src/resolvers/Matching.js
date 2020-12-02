@@ -17,19 +17,14 @@ export default {
   },
   Mutation: {
     async requestMatching(_, {applicantId, applicantName, targetId, targetName, type}) {
-      console.log(`${applicantId}가 ${targetId}에게 요청`);
-      
       try {
         await Matching.create({applicantId, applicantName, targetId, targetName, type});
         return true;
       } catch (error) {
-        console.error(error);
         return false;
       }
     },
     async decideAlarm(_, {_id, result, type, myId, applicantId}) {
-      console.log(`${_id} 알림 ${result} 처리`);
-      
       try {
         if (result !== 'reject') {
           await User.findOneAndUpdate({userId: myId},
@@ -49,18 +44,14 @@ export default {
         
         return true;
       } catch (error) {
-        console.error(error);
         return false;
       }
     },
     async offAlarm(_, {_id}) {
-      console.log(`${_id} 알림 끄기`);
-      
       try {
         await Matching.findOneAndUpdate({_id}, {$set: {alarm: false}});
         return true;
       } catch (error) {
-        console.error(error);
         return false;
       }
     },

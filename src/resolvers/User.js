@@ -43,45 +43,32 @@ export default {
   },
   Mutation: {
     async createUser(_, {userId, nickname}) {
-      console.log(`${userId} (${nickname})`);
-      
       try {
         const found = await User.find({userId});
-        console.log(found);
         !found.length && await User.create({userId, nickname});
         
         return true;
       } catch (error) {
-        console.error(error);
-        
         return false;
       }
     },
     async unFollow(_, {userId, friendId}) {
-      console.log(`${userId} 가 ${friendId} 와 언팔로우`);
-      
       try {
         await User.findOneAndUpdate({userId}, {$pull: {friends: friendId}});
         await User.findOneAndUpdate({userId: friendId}, {$pull: {friends: userId}});
         
         return true;
       } catch (error) {
-        console.error(error);
-        
         return false;
       }
     },
     async breakUp(_, {userId, coupleId}) {
-      console.log(`${userId}와 ${coupleId} 헤어짐`);
-      
       try {
         await User.findOneAndUpdate({userId}, {$set: {coupleId: ''}});
         await User.findOneAndUpdate({userId: coupleId}, {$set: {coupleId: ''}});
         
         return true;
       } catch (error) {
-        console.error(error);
-        
         return false;
       }
     },
