@@ -4,13 +4,13 @@ export default gql`
   scalar Date
 
   type Query {
-    record(userId: String!, placeId: String!): Record
     records(userId: String!, keyword: String, cursor: Int, pageSize: Int): Records!
     mapRecords(userId: String!, xMin: String!, xMax: String!, yMin: String!, yMax: String!): [Record]
     recordsByCount(userId: String!, now: Date): [Record]
     recordsByScore(userId: String!, now: Date): [Record]
     spending(userId: String!, now: Date): Spending!
     monthlySpending(userId: String!, now: Date, count: Int): [MonthlySpending]
+    monthlyPie(userId: String!, now: Date): [MonthlyPie]
     user(userId: String!): User
     users(userId: String, keyword: String): [User]
     myLover(userId: String!): User
@@ -41,7 +41,7 @@ export default gql`
     _id: ID
     userId: String!
 	  isMine: Boolean
-    placeId: String!
+    placeId: String
     placeName: String
     category: String
     address: String,
@@ -64,7 +64,7 @@ export default gql`
   input NewRecord {
     _id: ID
     userId: String!
-    placeId: String!
+    placeId: String
     placeName: String
     category: String
     address: String,
@@ -83,10 +83,17 @@ export default gql`
   type Spending {
     total: Int!
     dutch: Int!
+    settlement: Int!
   }
   
   type MonthlySpending {
     label: String!
+    spending: Int!
+  }
+  
+  type MonthlyPie {
+    category: String!
+    count: Int!
     spending: Int!
   }
   

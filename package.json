@@ -17,18 +17,18 @@
   },
   "homepage": "https://github.com/guinness1024/Doeatrecord-api#readme",
   "devDependencies": {
-    "@babel/cli": "^7.5.5",
-    "@babel/core": "^7.5.5",
-    "@babel/node": "^7.5.5",
-    "@babel/preset-env": "^7.5.5",
-    "nodemon": "^1.19.1"
+    "@babel/cli": "7.12.8",
+    "@babel/core": "7.12.9",
+    "@babel/node": "7.12.6",
+    "@babel/preset-env": "7.12.7",
+    "nodemon": "1.19.4"
   },
   "dependencies": {
-    "apollo-server": "^2.8.1",
-    "apollo-server-express": "^2.8.1",
+    "apollo-server": "2.19.0",
+    "apollo-server-express": "2.19.0",
     "express": "^4.17.1",
-    "graphql": "^14.4.2",
-    "moment": "^2.24.0",
-    "mongoose": "^5.6.9"
+    "graphql": "14.7.0",
+    "moment": "2.29.1",
+    "mongoose": "5.11.5"
   }
 }

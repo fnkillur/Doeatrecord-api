@@ -4,7 +4,7 @@ const {Schema, model} = mongoose;
 
 const RecordSchema = new Schema({
   userId: {type: String, required: true, index: true},
-  placeId: {type: String, required: true},
+  placeId: {type: String},
   placeName: String,
   category: String,
   address: String,

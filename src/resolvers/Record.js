@@ -97,13 +97,6 @@ const getRecords = async ({userIds = [], keyword, now, coordinate, moreInfo, sor
 
 export default {
   Query: {
-    async record(_, {userId, placeId}) {
-      const {coupleId} = await User.findOne({userId});
-      return Record.findOne({
-        $or: coupleId ? [{userId}, {userId: coupleId}] : [{userId}],
-        placeId
-      }, null, {sort: {visitedDate: -1}});
-    },
     async records(_, {userId, keyword, cursor = 1, pageSize = 10}) {
       const allRecords = await getRecords({userIds: [userId], keyword}, false);
       
@@ -120,7 +113,7 @@ export default {
       return getRecords({userIds: [userId], coordinate: {xMin, xMax, yMin, yMax}});
     },
     async recordsByCount(_, {userId, now}) {
-      return await getRecords({
+      return getRecords({
         userIds: [userId],
         now,
         moreInfo: {category: new RegExp('음식점')},
@@ -128,7 +121,7 @@ export default {
       });
     },
     async recordsByScore(_, {userId, now}) {
-      return await getRecords({
+      return getRecords({
         userIds: [userId],
         now,
         moreInfo: {category: new RegExp('음식점'), score: {$gt: 0}},
@@ -153,19 +146,29 @@ export default {
         };
       }, {total: 0, dutch: 0});
       
+      delete where.$or;
+      where.userId = userId;
+      where.isDutch = true;
+      const myDutch = (await Record.find(where)).reduce((sum, {money}) => sum + money, 0);
+      where.userId = coupleId;
+      const loverDutch = (await Record.find(where)).reduce((sum, {money}) => sum + money, 0);
+      
       return {
+        // TODO: total: isDutch 바뀌면 isDutch 아닌 내 기록 + (isDutch 인 나 + 커플 기록) / 2
         total,
         dutch: dutch / 2,
+        settlement: myDutch - loverDutch,
       };
     },
     async monthlySpending(_, {userId, now, count = 12}) {
-      const startDate = moment(now).subtract(count - 1, 'months').startOf('month');
+      const startDate = moment(now || new Date()).subtract(count - 1, 'months').startOf('month');
       const {coupleId} = await User.findOne({userId});
+      
       const pipelineList = [{
         $match: {
           visitedDate: {
             $gte: startDate.toDate(),
-            $lte: moment(now).endOf('month').toDate(),
+            $lte: moment(now || new Date()).endOf('month').toDate(),
           },
           $or: coupleId ? [{userId}, {userId: coupleId}] : [{userId}],
         },
@@ -175,19 +178,53 @@ export default {
           year: {$first: '$visitedYear'},
           label: {$first: '$visitedMonth'},
           count: {$sum: 1},
-          spending: {$sum: '$money'},
+          spending: {
+            $sum: {
+              $cond: [{$eq: ['$isDutch', true]}, {$divide: ['$money', 2]}, '$money']
+            }
+          },
         },
       }, {
         $sort: {year: 1, label: 1},
       }];
       
-      return await Record.aggregate(pipelineList);
+      return Record.aggregate(pipelineList);
+    },
+    async monthlyPie(_, {userId, now}) {
+      const {coupleId} = await User.findOne({userId});
+      let $match = {$or: coupleId ? [{userId}, {userId: coupleId}] : [{userId}]};
+      if (now) {
+        $match.visitedDate = {
+          $gte: moment(now).startOf('month').toDate(),
+          $lte: moment(now).endOf('month').toDate(),
+        };
+      }
+      
+      const pipelineList = [{
+        $match
+      }, {
+        $group: {
+          _id: '$category',
+          category: {$first: '$category'},
+          count: {$sum: 1},
+          spending: {
+            $sum: {
+              $cond: [{$eq: ['$isDutch', true]}, {$divide: ['$money', 2]}, '$money']
+            }
+          },
+        },
+      }, {
+        $sort: {spending: -1},
+      }];
+      
+      return Record.aggregate(pipelineList);
     },
   },
   Mutation: {
     async createRecord(_, {input}) {
       try {
         const {_id} = input;
+        console.log(input);
         _id ? await Record.updateOne({_id}, {$set: input}) : await Record.create(input);
         
         return true;
