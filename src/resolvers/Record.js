@@ -97,8 +97,20 @@ const getRecords = async ({userIds = [], keyword, now, coordinate, moreInfo, sor
 
 export default {
   Query: {
-    async records(_, {userId, keyword, cursor = 1, pageSize = 10}) {
-      const allRecords = await getRecords({userIds: [userId], keyword}, false);
+    async records(_, {userId, keyword, cursor = 1, pageSize = 10, isMoreFive = false}) {
+      let where = {
+        userIds: [userId],
+        keyword,
+      };
+      if (isMoreFive) {
+        where.moreInfo = {
+          $or: [
+            {isDutch: true, money: {$gte: 100000}},
+            {isDutch: false, money: {$gte: 50000}},
+          ],
+        };
+      }
+      const allRecords = await getRecords(where, false);
       
       const nextSize = pageSize * cursor;
       const records = allRecords.slice(0, nextSize);
@@ -224,12 +236,11 @@ export default {
     async createRecord(_, {input}) {
       try {
         const {_id} = input;
-        console.log(input);
-        _id ? await Record.updateOne({_id}, {$set: input}) : await Record.create(input);
+        const result = _id ? await Record.updateOne({_id}, {$set: input}) : await Record.create(input);
         
-        return true;
+        return Record.findById(result._id || _id);
       } catch (error) {
-        return false;
+        return null;
       }
     },
     async deleteRecord(_, {_id}) {

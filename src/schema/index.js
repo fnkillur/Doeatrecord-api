@@ -4,7 +4,7 @@ export default gql`
   scalar Date
 
   type Query {
-    records(userId: String!, keyword: String, cursor: Int, pageSize: Int): Records!
+    records(userId: String!, keyword: String, cursor: Int, pageSize: Int, isMoreFive: Boolean): Records!
     mapRecords(userId: String!, xMin: String!, xMax: String!, yMin: String!, yMax: String!): [Record]
     recordsByCount(userId: String!, now: Date): [Record]
     recordsByScore(userId: String!, now: Date): [Record]
@@ -21,7 +21,7 @@ export default gql`
   }
 
   type Mutation {
-    createRecord(input: NewRecord!): Boolean
+    createRecord(input: NewRecord!): Record
     createUser(userId: String!, nickname: String): Boolean
 	  requestMatching(applicantId: String!, applicantName: String!, targetId: String!, targetName: String! type: String!): Boolean
     decideAlarm(_id: ID!, result: String!, type: String!, myId: String!, applicantId: String!): Boolean
