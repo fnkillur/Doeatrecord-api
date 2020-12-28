@@ -18,11 +18,6 @@ export default {
       
       return User.findOne({userId: coupleId});
     },
-    async myFriends(_, {userId, keyword = ''}) {
-      const {friends} = await User.findOne({userId});
-      
-      return User.find({userId: {$in: friends}, nickname: new RegExp(keyword)});
-    },
     async unMatchedUsers(_, {userId, keyword = '', type}) {
       const {coupleId, friends = []} = await User.findOne({userId});
       let excludeList = friends.concat(userId);

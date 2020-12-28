@@ -8,14 +8,16 @@ export default gql`
     mapRecords(userId: String!, xMin: String!, xMax: String!, yMin: String!, yMax: String!): [Record]
     recordsByCount(userId: String!, now: Date): [Record]
     recordsByScore(userId: String!, now: Date): [Record]
+    
     spending(userId: String!, now: Date): Spending!
-    monthlySpending(userId: String!, now: Date, count: Int): [MonthlySpending]
     monthlyPie(userId: String!, now: Date): [MonthlyPie]
+    monthlySpendingTrend(userId: String!, now: Date, count: Int): [MonthlySpeningTrend]
+    
     user(userId: String!): User
     users(userId: String, keyword: String): [User]
     myLover(userId: String!): User
-    myFriends(userId: String!, keyword: String): [User]
     unMatchedUsers(userId: String!, keyword: String, type: String!): [User]
+    
     receivedAlarms(targetId: String!): [Matching]
     requestedAlarms(applicantId: String!, alarm: Boolean, completed: Boolean): [Matching]
   }
@@ -81,22 +83,22 @@ export default gql`
   }
 
   type Spending {
-    total: Int!
-    dutch: Int!
-    settlement: Int!
+    total: Int
+    dating: Int
+    settlement: Int
   }
-  
-  type MonthlySpending {
-    label: String!
-    spending: Int!
-  }
-  
+ 
   type MonthlyPie {
-    category: String!
-    count: Int!
-    spending: Int!
+    category: String
+    count: Int
+    spending: Int
   }
-  
+
+  type MonthlySpeningTrend {
+    label: String
+    spending: Int
+  }
+
   type User {
     userId: String!
     nickname: String
