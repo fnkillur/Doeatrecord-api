@@ -195,6 +195,10 @@ export default {
       }];
       
       const results = await Record.aggregate(pipelineList);
+      if (results.length < 5) {
+        return results;
+      }
+      
       const last = results.slice(4).reduce((last, {spending}, index) => {
         return {
           _id: '기타',
