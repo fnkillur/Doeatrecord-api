@@ -70,9 +70,15 @@ const getRecords = async ({userId, keyword, now, coordinate, moreInfo, sort}, us
       menus: 1,
       money: {
         $cond: {
-          if: {$eq: ["$isDutch", true]},
-          then: {$divide: ["$money", 2]},
-          else: "$money",
+          if: {$eq: ["$money", null]},
+          then: 0,
+          else: {
+            $cond: {
+              if: {$eq: ["$isDutch", true]},
+              then: {$divide: ["$money", 2]},
+              else: "$money",
+            },
+          },
         },
       },
       isDutch: 1,
@@ -101,6 +107,7 @@ const getRecords = async ({userId, keyword, now, coordinate, moreInfo, sort}, us
       score: {$avg: '$score'}
     }
   });
+  
   pipelineList.push({
     $sort: sort || {visitedDate: -1, created: -1}
   });
