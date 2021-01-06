@@ -72,13 +72,7 @@ const getRecords = async ({userId, keyword, now, coordinate, moreInfo, sort}, us
         $cond: {
           if: {$eq: ["$money", null]},
           then: 0,
-          else: {
-            $cond: {
-              if: {$eq: ["$isDutch", true]},
-              then: {$divide: ["$money", 2]},
-              else: "$money",
-            },
-          },
+          else: "$money",
         },
       },
       isDutch: 1,
@@ -164,7 +158,7 @@ export default {
         const isMy = record.userId === userId;
         
         return {
-          total: total + record.money,
+          total: total + (record.isDutch ? record.money / 2 : record.money),
           my: my + ((isMy && record.isDutch) ? record.money : 0),
           lover: lover + (isMy ? 0 : record.money),
         };
@@ -174,9 +168,9 @@ export default {
         // 내 지출은 데이트 비용으로 결제한 건 절반만 포함 (정산하니까)
         total,
         // 데이트 비용
-        dating: my + lover,
-        // 정산은 절반으로 나눈 금액으로 계산
-        settlement: my - lover,
+        dating: (my + lover) / 2,
+        // 정산
+        settlement: (my - lover) / 2,
       };
     },
     async monthlyPie(_, {userId, now}) {
@@ -184,7 +178,7 @@ export default {
       
       const pipelineList = [{
         $match: {
-          $and: andList,
+          $and: andList.concat({category: {$ne: '기타'}}),
         },
       }, {
         $group: {
