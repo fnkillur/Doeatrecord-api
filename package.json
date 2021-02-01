@@ -1,5 +1,5 @@
 {
-  "name": "Doeatrecord-api",
+  "name": "whereismymoney-api",
   "version": "1.0.0",
   "description": "DoEatRecord App Api Server by GraphQL, Apollo",
   "main": "index.js",
@@ -26,6 +26,7 @@
   "dependencies": {
     "apollo-server": "2.19.0",
     "apollo-server-express": "2.19.0",
+    "date-fns": "2.16.1",
     "express": "^4.17.1",
     "graphql": "14.7.0",
     "moment": "2.29.1",
