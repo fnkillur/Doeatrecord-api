@@ -1,7 +1,6 @@
 import moment from "moment";
 import User from "../models/User";
 import Record from "../models/Record";
-import {format} from "date-fns";
 
 const getAndList = async ({userId, keyword, now, coordinate}) => {
   if (!userId) {
@@ -19,7 +18,7 @@ const getAndList = async ({userId, keyword, now, coordinate}) => {
       visitedMonth: moment(now).month() + 1,
       visitedYear: moment(now).year(),
     });
-    console.log(now, moment(now).format('yyyy.MM.dd'), format(now, 'yyyy.MM.dd'));
+    console.log(now, moment(now).format('yyyy.MM.d'));
     console.log('year: ', moment(now).year());
     console.log('month: ', moment(now).month() + 1);
   }

@@ -26,7 +26,6 @@
   "dependencies": {
     "apollo-server": "2.19.0",
     "apollo-server-express": "2.19.0",
-    "date-fns": "2.16.1",
     "express": "^4.17.1",
     "graphql": "14.7.0",
     "moment": "2.29.1",
